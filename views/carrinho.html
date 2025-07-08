@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Metadados básicos do documento -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Carrinho</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Cabeçalho simplificado -->
+  <header>
+    <a href="index.html" class="logo">
+      <img src="images/logo.png" alt="Logo Hamburgueria">
+      <span>Hamburgueria do Sabor</span>
+    </a>
+  </header>
+
+  <!-- Container principal do carrinho -->
+  <div class="carrinho-container">
+    <h1>Seu Carrinho</h1>
+    <!-- Área onde os itens do carrinho serão exibidos -->
+    <div id="carrinho-itens" class="itens-carrinho"></div>
+    
+    <!-- Resumo do pedido -->
+    <div class="resumo-carrinho">
+      <h2 id="total">Total: R$ 0,00</h2>
+      <!-- Botões de ação -->
+      <button onclick="fazerPagamento()" class="btn-pagamento">Fazer Pagamento</button>
+      <button onclick="window.location.href='produtos.html'" class="btn-voltar">Continuar Comprando</button>
+    </div>
+  </div>
+
+  <!-- Script específico do carrinho -->
+  <script>
+    // Função para carregar e exibir itens do carrinho
+    function carregarCarrinho() {
+      const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+      const carrinhoItens = document.getElementById("carrinho-itens");
+      const totalElement = document.getElementById("total");
+      
+      if (carrinho.length === 0) {
+        carrinhoItens.innerHTML = "<p>Seu carrinho está vazio.</p>";
+        totalElement.textContent = "Total: R$ 0,00";
+        return;
+      }
+      
+      let total = 0;
+      let html = "";
+      
+      carrinho.forEach((item, index) => {
+        const subtotal = item.preco * item.quantidade;
+        total += subtotal;
+        
+        html += `
+          <div class="item-carrinho">
+            <div class="item-info">
+              <h3>${item.nome}</h3>
+              <p>Preço unitário: R$ ${item.preco.toFixed(2)}</p>
+              <p>Quantidade: ${item.quantidade}</p>
+              <p>Subtotal: R$ ${subtotal.toFixed(2)}</p>
+            </div>
+            <div class="item-acoes">
+              <button onclick="removerItem(${index})" class="btn-remover">Remover</button>
+            </div>
+          </div>
+        `;
+      });
+      
+      carrinhoItens.innerHTML = html;
+      totalElement.textContent = `Total: R$ ${total.toFixed(2)}`;
+    }
+    
+    // Função para remover item do carrinho
+    function removerItem(index) {
+      const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+      carrinho.splice(index, 1);
+      localStorage.setItem("carrinho", JSON.stringify(carrinho));
+      carregarCarrinho();
+    }
+    
+    // Função para fazer pagamento
+    function fazerPagamento() {
+      const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+      if (carrinho.length === 0) {
+        alert("Seu carrinho está vazio!");
+        return;
+      }
+      window.location.href = "pagamento.html";
+    }
+    
+    // Carregar carrinho quando a página carrega
+    document.addEventListener('DOMContentLoaded', carregarCarrinho);
+  </script>
+</body>
+</html>
